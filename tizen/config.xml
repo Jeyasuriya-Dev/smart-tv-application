@@ -1,0 +1,8 @@
+<widget xmlns="http://www.w3.org/ns/widgets" id="com.example.smarttvapp" version="1.0.0">
+  <content src="index.html"/>
+  <tizen:application id="com.example.smarttvapp" package="com.example" required_version="2.4" />
+  <tizen:category name="http://tizen.org/category/tv" />
+  <tizen:privilege name="http://tizen.org/privilege/filesystem.read"/>
+  <tizen:privilege name="http://tizen.org/privilege/filesystem.write"/>
+
+</widget>

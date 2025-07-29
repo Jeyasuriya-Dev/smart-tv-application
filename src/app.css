@@ -1,0 +1,145 @@
+*{
+    padding: 0px;
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #224b72, #0c3552);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    height: 100vh;
+}
+
+.contents-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    top: 10%;
+    width: max-content;
+}
+
+.logo {
+    width: 80px;
+    margin-bottom: 10px;
+}
+
+.tagline {
+    margin: 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    font-weight: 600;
+}
+
+h2 {
+    margin: 20px 0;
+    font-size: 22px;
+    font-family: sans-serif;
+    font-weight: 500;
+}
+
+.qr-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 5px;
+    margin: 20px 0;
+    text-align: center;
+    color: black;
+}
+
+.qr-code {
+    width: 100%;
+    max-width: 250px;
+}
+
+.form-group {
+    margin: 20px 0;
+    text-align: center;
+    font-weight: 550;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 7px;
+    border-radius: 8px;
+    width: fit-content;
+    border: 2px solid rgb(2, 65, 138);
+    background-color: #0c3953;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+
+.generator-ip{
+    width: 100%;
+    padding: 7px;
+    border-radius: 8px;
+    width: fit-content;
+    border: 2px solid rgb(2, 65, 138);
+    background-color: #0c3953;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-group input:focus{
+    border: 2px solid rgb(2, 65, 138);
+    outline: none;
+    color: #0689b4;
+}
+
+.submit-btn {
+    background: #00bfffe7;
+    color: #fff;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 191, 255, 0.4);
+    transition: background 0.3s;
+}
+
+.button-container{
+    display: block;
+}
+
+.submit-btn:hover {
+    background: #0099cc;
+}
+
+.version-container{
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    display: block;
+    width: 100%;
+}
+
+.version {
+    position: absolute;
+    bottom: 10px;
+    right: 0px;
+    font-size: 10px;
+    opacity: 0.7;
+    line-height: 1.4;
+}
