@@ -1,36 +1,67 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 
 const DeviceStatusPoller = () => {
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      try {
-        const response = await axios.get(
-          'http://192.168.70.100:8585/iqworld/api/v1/device/checkonline',
-          {
-            params: {
-              adrid: '0461dbdd0ce43fd2',
-              clientname: 'ridsysc',
-            },
-            timeout: 2000, // Optional: fail fast if unreachable
-          }
-        );
+	const [isOnline, setIsOnline] = useState(navigator.onLine);
+	const [apiReachable, setApiReachable] = useState(true);
+	const isOnlineURL = import.meta.env.VITE_DEVICEONLINE_CHECK_URL;
 
-        if (response.status === 200 ) {
-          console.log('✅ Device is ONLINE');
-        } else {
-          console.log('❌ Device is OFFLINE');
-        }
-      } catch (err) {
-        console.log('❌ Device is OFFLINE or API Error');
-      }
-    }, 1000); // 1000 ms = 1 second
+	const checkInternet = async () => {
+		// Step 1: Local device check
+		setIsOnline(navigator.onLine);
 
-    // Cleanup on unmount
-    return () => clearInterval(intervalId);
-  }, []);
+		// Step 2: Backend API check
+		try {
+			const response = await axios.get(isOnlineURL, {
+				params: {
+					adrid: '0461dbdd0ce43fd2',
+					clientname: 'ridsysc',
+				},
+				timeout: 3000,
+			});
+			setApiReachable(response.status === 200);
+		} catch (err) {
+			setApiReachable(false);
+		}
+	};
 
-  return null; // No UI needed
+	useEffect(() => {
+		checkInternet(); // Initial check
+
+		const interval = setInterval(checkInternet, 5000); // Every 5 seconds
+
+		// Browser-level events
+		const handleOnline = () => setIsOnline(true);
+		const handleOffline = () => setIsOnline(false);
+		window.addEventListener('online', handleOnline);
+		window.addEventListener('offline', handleOffline);
+
+		return () => {
+			clearInterval(interval);
+			window.removeEventListener('online', handleOnline);
+			window.removeEventListener('offline', handleOffline);
+		};
+	}, [isOnlineURL]);
+
+	return (
+		<div
+			style={{
+				position: 'fixed',
+				bottom: 10,
+				left: 10,
+				backgroundColor: isOnline && apiReachable ? 'rgba(0,255,0,0.2)' : 'rgba(255,0,0,0.2)',
+				color: isOnline && apiReachable ? '#0f0' : '#f00',
+				padding: '6px 12px',
+				borderRadius: '6px',
+				fontWeight: 600,
+				fontSize: '14px',
+				zIndex: 9999,
+				fontFamily: 'monospace',
+			}}
+		>
+			{isOnline && apiReachable ? '🟢 Online' : isOnline ? '🟡 Local Only' : '🔴 Offline'}
+		</div>
+	);
 };
 
 export default DeviceStatusPoller;

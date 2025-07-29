@@ -9,6 +9,8 @@ const useDeviceDetails = (shouldStart) => {
 	const navigate = useNavigate();
 	const Device_id = 'de568fcc560faa62';
 	const BASE_URL = 'https://ds.iqtv.in:8080/iqworld';
+	// const APPLICATION_URL = import.meta.env.VITE_SERVER_APPLICATION_URL;
+
 
 	const storeDeviceDetails = userDeviceStore.getState().setDeviceDetails;
 
