@@ -19,7 +19,7 @@ const SplashScreen = ({ onComplete }) => {
 	const [videoSrc, setVideoSrc] = useState('');
 	// const [hasHandled, setHasHandled] = useState(false);
 	const [videoEndState, SetVideoEndState] = useState(false);  // This is for Video End State Get 
-	const [serverStatus, setServerStatus] = useState('error'); // waiting | maintenance | streaming | error 
+	const [serverStatus, setServerStatus] = useState('streaming'); // waiting | maintenance | streaming | error 
 
 	const [startDeviceCheck, setStartDeviceCheck] = useState(false);
 	const deviceDetails = userDeviceDetails(startDeviceCheck);
