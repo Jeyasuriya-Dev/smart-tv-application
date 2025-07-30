@@ -1,75 +1,46 @@
-import { useEffect } from 'react';
+// src/utils/fetchAndDownloadMedia.js
 import useMediaStore from '../store/useMediaStore';
 import axios from 'axios';
 import { downloadFile } from '../utils/fileDownloader';
 
-const MediaFetcher = () => {
-  const setMediaFiles = useMediaStore((state) => state.setMediaFiles);
-  const mediaFiles = useMediaStore((state) => state.mediaFiles);
-  // const media = useMediaStore.getState().mediaFiles;
+const fetchAndDownloadMedia = async () => {
+  const setMediaFiles = useMediaStore.getState().setMediaFiles;
 
+  try {
 
-
-
-  useEffect(() => {
-    if (mediaFiles.length === 0) return; // Prevent logging on empty
-
-    const timeoutId = setTimeout(() => {
-      console.log('=== Zustand Media Files (After 2 sec) ===');
-      console.log(JSON.stringify(mediaFiles, null, 2));
-    }, 2000); // ⏲ .5 seconds delay
-
-    return () => clearTimeout(timeoutId); // Cleanup on unmount
-  }, [mediaFiles]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-
-        // clientname=ridsysc&state_id=2&city_id=65&androidid=0461dbdd0ce43fd2&deviceid=IQW0000014&vertical=true
-        const response = await axios.get('https://ds.iqtv.in:8080/iqworld/api/v1/playlist/mediafilebyclientforsplit', {
-          params: {
-            clientname: 'ridsysc',
-            state_id: 2,
-            city_id: 65,
-            androidid: '0461dbdd0ce43fd2',
-            deviceid: 'IQW0000014',
-            vertical: true
-          }
-        });
-        
-
-		const playlist = response.data;
-        setMediaFiles(playlist);  //Here Media files or details Store into Zustand Store using setMediaFiles()
-
-
-        // console.log('✅ API Response:', response.data); //User Device Details log without JSON format
-        
-        // console.log('Media outside React:', media);
-
-
-        // ✅ Trigger auto-download for each media file
-        playlist.layout_list.forEach((layout) => {
-          layout.zonelist.forEach((zone) => {
-            zone.media_list.forEach((media) => {
-              const url = media.Url || media.url;
-              const fileName = url?.split('/').pop();
-              if (url && fileName) {
-                downloadFile(url, fileName);
-              }
-            });
-          });
-        });
-
-      } catch (err) {
-        console.error('❌ API Error:', err);
+    // clientname=ARIHANTDUGGAD&state_id=7&city_id=2482&androidid=a7b235567dbd7528&deviceid=IQW0004251&vertical=false
+    const response = await axios.get('https://ds.iqtv.in:8080/iqworld/api/v1/playlist/mediafilebyclientforsplit', {
+      params: {
+        clientname: 'ridsysc',
+        state_id: 2,
+        city_id: 65,
+        androidid: '0461dbdd0ce43fd2',
+        deviceid: 'IQW0000014',
+        vertical: true
       }
-    };
+    });
 
-    fetchData();
-  }, [setMediaFiles]);
+    const playlist = response.data;
+    setMediaFiles(playlist);
 
-  return null; // No UI needed
+    // ✅ Auto download each file
+    for (const layout of playlist.layout_list) {
+      for (const zone of layout.zonelist) {
+        for (const media of zone.media_list) {
+          const url = media.Url || media.url;
+          const fileName = url?.split('/').pop();
+          if (url && fileName) {
+            await downloadFile(url, fileName); // Optional: await to ensure all files downloaded
+          }
+        }
+      }
+    }
+
+    return true; // Success
+  } catch (err) {
+    console.error('❌ Error fetching media:', err);
+    return false;
+  }
 };
 
-export default MediaFetcher;
+export default fetchAndDownloadMedia;

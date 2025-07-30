@@ -7,7 +7,7 @@ import userDeviceStore from '../store/userDeviceStore';
 const useDeviceDetails = (shouldStart) => {
 	const [deviceDetails, setDeviceDetails] = useState(null);
 	const navigate = useNavigate();
-	const Device_id = '0461dbdd0ce43fd2'; // 0461dbdd0ce43fd2
+	const Device_id = '0461dbdd0ce43fd2'; // 0461dbdd0ce43fd2  a7b235567dbd7528  0461dbdd0ce43fd2
 	const BASE_URL = 'https://ds.iqtv.in:8080/iqworld';
 	// const APPLICATION_URL = import.meta.env.VITE_SERVER_APPLICATION_URL;
 

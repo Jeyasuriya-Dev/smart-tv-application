@@ -2,13 +2,15 @@ const express  = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const fetch = require('node-fetch');
+
+const path = require('path');
+const app = express();
+const PORT = 3005;
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT;
 const TARGET_URL = process.env.TARGET_URL; // http://192.168.70.100:8585/iqserver
 const BASE_URL = process.env.BASE_URL;  //https://ds.iqtv.in:8080/iqworld
 
@@ -43,25 +45,6 @@ fetchServerDetails();
 // Optional: Refresh the URL every few minutes if needed
 setInterval(fetchServerDetails, 5 * 60 * 1000); // Every 5 mins
 
-
-
-// API Proxy Route (Example: /api/v1/none-auth/device/isexist)
-// app.get('/api/v1/none-auth/device/isexist', async (req, res) => {
-//   try {
-//     const deviceId = req.query.deviceId; // Pass device ID as query param
-
-//     const res = await fetch(`${BASE_URL}/api/v1/none-auth/device/isexist?deviceId=${deviceId}`);
-//     const data = await response.json();
-
-//     console.log('== Device Check API Response ==');
-//     console.log(JSON.stringify(data, null, 2));
-
-//     res.json(data);
-//   } catch (err) {
-//     console.error('Proxy Error:', err);
-//     res.status(500).json({ error: 'Proxy server error' });
-//   }
-// });
 app.post('/api/v1/none-auth/device/isexist', async (req, res) => {
   try {
     const deviceId = req.query.deviceId;
@@ -106,4 +89,14 @@ app.post('/api/auth/signin', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Proxy server running on port ${PORT}`);
+});
+
+
+
+// Serve local Downloads folder
+const downloadsPath = path.join(require('os').homedir(), 'Downloads');
+app.use('/media', express.static(downloadsPath));
+
+app.listen(PORT, () => {
+  console.log(`Media server running at http://localhost:${PORT}/media`);
 });

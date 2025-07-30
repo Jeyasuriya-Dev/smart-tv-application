@@ -10,6 +10,7 @@ import useDeviceDetails from './API-Handling/userDeviceDetails';
 import AndroidIDFetcher from './components/AndroidIDFetcher';
 import RemoteControlHandler from './components/RemoteControlHandler';
 import DeviceStatusPoller from './API-Handling/CheckDeviceOnline';
+import StreamingPage from './components/StreamingPage';
 
 export const Home = () => {
 	useDeviceDetails(); // Call polling here
@@ -17,9 +18,10 @@ export const Home = () => {
 	return (
 		<>
 			<DeviceStatusPoller />
-			<div style={{ color: 'white', background: 'black', width: '100hw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+			{/* <div style={{ color: 'white', background: 'black', width: '100hw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 				<h1>🏠 Home - Streaming Mode</h1>
-			</div>
+			</div> */}
+			<StreamingPage/>
 		</>
 	);
 };
