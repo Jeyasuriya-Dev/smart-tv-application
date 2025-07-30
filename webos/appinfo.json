@@ -12,5 +12,10 @@
     "accessibility"
   ],
   "visible": true,
-  "inspectable": true
+  "inspectable": true,
+  "requiredPermissions": [
+    "fullscreen"
+  ],
+  "fullscreen": true,
+  "noWindow": false
 }

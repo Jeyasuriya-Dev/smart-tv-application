@@ -25,14 +25,16 @@ const MediaFetcher = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+
+        // clientname=ridsysc&state_id=2&city_id=65&androidid=0461dbdd0ce43fd2&deviceid=IQW0000014&vertical=true
         const response = await axios.get('https://ds.iqtv.in:8080/iqworld/api/v1/playlist/mediafilebyclientforsplit', {
           params: {
-            clientname: 'ARIHANTDUGGAD',
-            state_id: 7,
-            city_id: 2482,
-            androidid: 'a7b235567dbd7528',
-            deviceid: 'IQW0004251',
-            vertical: false
+            clientname: 'ridsysc',
+            state_id: 2,
+            city_id: 65,
+            androidid: '0461dbdd0ce43fd2',
+            deviceid: 'IQW0000014',
+            vertical: true
           }
         });
         

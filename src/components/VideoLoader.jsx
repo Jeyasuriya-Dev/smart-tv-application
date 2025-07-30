@@ -64,7 +64,7 @@ const SplashScreen = ({ onComplete }) => {
 				if (serverStatus !== 'streaming') {
 					console.log('Switching to streaming mode');
 					setServerStatus('streaming');
-					setStartDeviceCheck(true); // ✅ Trigger device API
+					setStartDeviceCheck(true); // Trigger device API
 
 					// onComplete(); // Proceed to next UI / start streaming (optional)
 					setTimeout(() => {
@@ -81,12 +81,12 @@ const SplashScreen = ({ onComplete }) => {
 				}
 			}
 
-			// ✅ Loop continues in both cases
+			// Loop continues in both cases
 		} else {
 			if (serverStatus == 'error') {
 				console.log('Switching to error mode');
 				setServerStatus('error');
-				// 🛑 Stop streaming here if needed
+				//  Stop streaming here if needed
 
 				setStartDeviceCheck(false); // once the streaming will end or Face any Error 
 			}
@@ -120,7 +120,7 @@ const SplashScreen = ({ onComplete }) => {
 
 	useEffect(() => {
 		if (videoEndState && serverStatus === 'streaming') {
-			console.log('✅ Redirecting to /register');
+			console.log('Redirecting to /register');
 		}
 	}, [videoEndState, serverStatus]);
 
@@ -152,7 +152,7 @@ const SplashScreen = ({ onComplete }) => {
 
 	useEffect(() => {
 		if (serverStatus === 'streaming' && isRegistered) {
-			console.log('✅ Redirecting to / (streaming UI)');
+			console.log(' Redirecting to / (streaming UI)');
 			navigate('/');
 		}
 	}, [serverStatus, isRegistered]);
@@ -166,7 +166,7 @@ const SplashScreen = ({ onComplete }) => {
 				<>
 					{serverStatus === 'maintenance' && (
 						<>
-							<div style={styles.overlay}>🚧 Server Under Maintenance 🚧</div>
+							<div style={styles.overlay}>Server Under Maintenance 🚧</div>
 							<ToastContainer />
 						</>
 					)}
@@ -174,7 +174,7 @@ const SplashScreen = ({ onComplete }) => {
 					{serverStatus === 'waiting' && (
 						<>
 							<ToastContainer />
-							<div style={styles.overlay}>🔄 Waiting for Streaming...</div>
+							<div style={styles.overlay}>Waiting for Streaming...</div>
 						</>
 					)}
 

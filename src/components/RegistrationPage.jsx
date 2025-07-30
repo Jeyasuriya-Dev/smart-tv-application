@@ -52,11 +52,11 @@ export default function RegistrationPage() {
 		const { setIsRegistered } = userDeviceStore.getState();
 
 		if (deviceDetails && uniqueNumber === deviceDetails.username) {
-			toast.success("✅ Registration successful");
-			setIsRegistered(true); // ✅ Set global registration flag
-			navigate('/');          // ✅ Redirect to streaming page
+			toast.success("Registration successful");
+			setIsRegistered(true); // Set global registration flag
+			navigate('/');          // Redirect to streaming page
 		} else {
-			toast.error("❌ Invalid username");
+			toast.error(" Invalid username");
 		}
 	};
 
