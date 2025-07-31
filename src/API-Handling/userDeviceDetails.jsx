@@ -53,9 +53,9 @@ const useDeviceDetails = (shouldStart) => {
 
 
 				if (data.status === 'success' && data.client_status && data.device_status) {
-					toast.success('✅ Device verified successfully!', { autoClose: 1500 });
+					toast.success(' Device verified successfully!', { autoClose: 1500 });
 				} else {
-					toast.error('❌ Device not registered! Redirecting...', { autoClose: 1500 });
+					toast.error(' Device not registered! Redirecting...', { autoClose: 1500 });
 
 					//IF Device is Not Registered It will redirect Registration page with in 2sec
 					setTimeout(() => {

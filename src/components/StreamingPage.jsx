@@ -1,85 +1,105 @@
 import React, { useEffect, useState } from 'react';
 import useMediaStore from '../store/useMediaStore';
+import useDownloadOnce from '../hooks/useDownloadOnce';
+import { useDeviceStatus } from '../context/DeviceStatusPollerContext';
 
-const isVideoFile = (filename) => {
-  return /\.(mp4|webm|ogg)$/i.test(filename);
-};
+const FOLDER_NAME = 'IQMediaFiles';
 
-const isImageFile = (filename) => {
-  return /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(filename);
+const isVideo = (f) => /\.(mp4|webm|ogg)$/i.test(f);
+const isImage = (f) => /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(f);
+
+const getLocalPath = (filename) => {
+	if (window.webOS) return `file:///media/developer/${FOLDER_NAME}/${filename}`;
+	if (window.tizen) return `/opt/usr/home/owner/Downloads/${FOLDER_NAME}/${filename}`;
+	return `/downloads/${FOLDER_NAME}/${filename}`; // fallback
 };
 
 const StreamingPage = () => {
-  const mediaFiles = useMediaStore((state) => state.mediaFiles);
-  const [mediaList, setMediaList] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+	const isOnline = useDeviceStatus();
+	const downloadOnce = useDownloadOnce();
+	const mediaFiles = useMediaStore((state) => state.mediaFiles);
 
-  useEffect(() => {
-    if (!mediaFiles.layout_list) return;
+	const [mediaList, setMediaList] = useState([]);
+	const [index, setIndex] = useState(0);
 
-    const list = [];
+	useEffect(() => {
+		const loadMedia = async () => {
+			if (isOnline) {
+				await downloadOnce(); // one-time download
+				const list = [];
 
-    mediaFiles.layout_list.forEach((layout) => {
-      layout.zonelist.forEach((zone) => {
-        zone.media_list.forEach((media) => {
-          const url = media.Url || media.url;
-          const fileName = url?.split('/').pop();
-          if (fileName) {
-            list.push({ url: `/downloads/${fileName}`, type: fileName }); // Use correct local path
-          }
-        });
-      });
-    });
+				mediaFiles?.layout_list?.forEach((layout) => {
+					layout.zonelist.forEach((zone) => {
+						zone.media_list.forEach((media) => {
+							const url = media.Url || media.url;
+							const filename = url?.split('/').pop();
+							const extension = filename?.split('.').pop().toLowerCase();
+							const type = isVideo(extension) ? 'video' : 'image';
+							list.push({ url, type });
+						});
+					});
+				});
 
-    setMediaList(list);
-  }, [mediaFiles]);
+				setMediaList(list);
+			} else {
+				const cached = JSON.parse(localStorage.getItem('downloadedMediaFiles_IQMediaFiles') || '[]');
+				const offlineList = cached.map((filename) => {
+					const path = getLocalPath(filename);
+					const extension = filename?.split('.').pop().toLowerCase();
+					const type = isVideo(extension) ? 'video' : 'image';
+					return { url: path, type };
+				});
+				setMediaList(offlineList);
+			}
+		};
 
-  useEffect(() => {
-    if (mediaList.length === 0) return;
+		loadMedia();
+	}, [isOnline]);
 
-    let timer;
+	useEffect(() => {
+		if (mediaList.length === 0) return;
 
-    const currentMedia = mediaList[currentIndex];
-    if (currentMedia && isImageFile(currentMedia.type)) {
-      // Set timer for image duration (e.g., 5 sec)
-      timer = setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % mediaList.length);
-      }, 5000);
-    }
+		let timer;
+		const current = mediaList[index];
 
-    return () => clearTimeout(timer);
-  }, [currentIndex, mediaList]);
+		if (current.type === 'image') {
+			timer = setTimeout(() => setIndex((i) => (i + 1) % mediaList.length), 5000);
+		}
 
-  const handleVideoEnd = () => {
-    setCurrentIndex((prev) => (prev + 1) % mediaList.length);
-  };
+		return () => clearTimeout(timer);
+	}, [index, mediaList]);
 
-  const currentMedia = mediaList[currentIndex];
+	const onVideoEnd = () => setIndex((i) => (i + 1) % mediaList.length);
+	const current = mediaList[index];
+	if (!current) return <p>Loading media...</p>;
 
-  if (!currentMedia) return <div>Loading media...</div>;
-
-  return (
-    <div className="streaming-container" style={{ textAlign: 'center', paddingTop: '2rem' }}>
-      <h1 style={{ fontSize: '2rem' }}>📺 Streaming Page</h1>
-      <div style={{ maxWidth: '90vw', maxHeight: '80vh', margin: 'auto' }}>
-        {isVideoFile(currentMedia.type) ? (
-          <video
-            src={currentMedia.url}
-            controls
-            autoPlay
-            onEnded={handleVideoEnd}
-            style={{ maxWidth: '100%', maxHeight: '100%' }}
-          />
-        ) : (
-          <img
-            src={currentMedia.url}
-            alt="Media"
-            style={{ maxWidth: '100%', maxHeight: '100%' }}
-          />
-        )}
-      </div>
-    </div>
-  );
+	return (
+		<div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+			{current.type === 'video' ? (
+				<video
+					src={current.url}
+					autoPlay
+					controls={false}
+					onEnded={onVideoEnd}
+					style={{
+						width: '100%',
+						height: '100%',
+						objectFit: 'cover',
+					}}
+				/>
+			) : (
+				<img
+					src={current.url}
+					alt="media"
+					style={{
+						width: '100%',
+						height: '100%',
+						objectFit: 'cover',
+					}}
+				/>
+			)}
+		</div>
+	);
 };
 
 export default StreamingPage;

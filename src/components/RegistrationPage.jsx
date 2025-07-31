@@ -102,7 +102,7 @@ export default function RegistrationPage() {
 						<input type="text" id="unique-number" onChange={handleChange} />
 					</div>
 					<div className='button-container'>
-						<button className="submit-btn" onClick={handleSubmit}>Submit</button>
+						<button className="submit-btn" id='submit-button' onClick={handleSubmit}>Submit</button>
 						<p>{deviceId}</p>
 					</div>
 				</div>

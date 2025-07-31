@@ -1,108 +1,140 @@
-
 // src/utils/fileDownloader.jsx
 
-export const downloadFile = async (url, fileName, onSuccess = () => {}) => {
-  // Read already downloaded file names from localStorage
-  const downloaded = JSON.parse(localStorage.getItem('downloadedMediaFiles') || '[]');
+const FOLDER_NAME = 'IQMediaFiles';
+const CACHE_KEY = 'downloadedMediaFiles_IQMediaFiles';
 
-  // Add file to localStorage cache
+export const downloadFile = async (url, fileName, onSuccess = () => {}) => {
+  const downloaded = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
+
+
+  //  Skip download if already marked
+  if (downloaded.includes(fileName)) {
+    console.log(` Already downloaded: ${fileName}`);
+    onSuccess(fileName); // Still call onSuccess
+    return;
+  }
+
   const saveToCache = () => {
     if (!downloaded.includes(fileName)) {
       downloaded.push(fileName);
-      localStorage.setItem('downloadedMediaFiles', JSON.stringify(downloaded));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(downloaded));
     }
   };
 
-  // Remove file from cache (in case it was deleted manually)
   const removeFromCache = () => {
     const index = downloaded.indexOf(fileName);
     if (index !== -1) {
       downloaded.splice(index, 1);
-      localStorage.setItem('downloadedMediaFiles', JSON.stringify(downloaded));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(downloaded));
     }
   };
 
   try {
-    // Fetch the file from the provided URL
     const response = await fetch(url);
     const blob = await response.blob();
 
-    // ==== For webOS Platform ====
+    // ==== For webOS ====
     if (window.webOS && window.webOS.filesystem) {
+      const saveToWebOS = (dir) => {
+        dir.resolve(fileName,
+          (existingFile) => {
+            console.log(` Already exists on webOS: ${fileName}`);
+            onSuccess(existingFile.fullPath);
+          },
+          () => {
+            removeFromCache();
+            dir.createFile(fileName, false, (fileEntry) => {
+              fileEntry.createWriter((writer) => {
+                writer.write(blob);
+                saveToCache();
+                console.log(` Downloaded to webOS: ${fileName}`);
+                onSuccess(fileEntry.fullPath);
+              }, (err) => console.error(' Writer error (webOS)', err));
+            }, (err) => console.error(' Create file error (webOS)', err));
+          }
+        );
+      };
+
       window.webOS.filesystem.resolve(
-        'downloads', // Folder to save in
-        (dir) => {
-          // Check if file already exists
-          dir.resolve(fileName,
-            (existingFile) => {
-              console.log(`🟡 Already exists on webOS: ${fileName}`);
-              // File exists → skip download
+        FOLDER_NAME,
+        saveToWebOS,
+        () => {
+          console.warn(' Folder not found on webOS, creating...');
+          window.webOS.filesystem.resolve(
+            'downloads',
+            (root) => {
+              root.createDirectory(FOLDER_NAME, (newDir) => {
+                saveToWebOS(newDir);
+              }, (err) => console.error(' Failed to create folder (webOS)', err));
             },
-            () => {
-              // File does not exist → download it
-              removeFromCache(); // Cleanup if wrongly marked
-              dir.createFile(fileName, false, (fileEntry) => {
-                fileEntry.createWriter((writer) => {
-                  writer.write(blob); // Save file content
-                  saveToCache(); // Save to localStorage
-                  console.log(`✅ Downloaded to webOS: ${fileName}`);
-                  onSuccess(fileEntry.fullPath);
-                }, (err) => console.error('❌ Writer error (webOS)', err));
-              }, (err) => console.error('❌ Create file error (webOS)', err));
-            }
+            (err) => console.error(' Root resolve error (webOS)', err)
           );
-        },
-        (err) => console.error('❌ webOS directory error:', err)
+        }
       );
 
-    // ==== For Tizen Platform ====
+    // ==== For Tizen ====
     } else if (window.tizen && window.tizen.filesystem) {
-      tizen.filesystem.resolve('downloads', (dir) => {
+      const saveToTizen = (dir) => {
         try {
-          dir.resolve(fileName); // Throws if file doesn't exist
-          console.log(`🟡 Already exists on Tizen: ${fileName}`);
-          // File exists → skip download
+          dir.resolve(fileName);
+          console.log(` Already exists on Tizen: ${fileName}`);
+          onSuccess(`${dir.toURI()}/${fileName}`);
         } catch (e) {
-          // File does not exist → create and write
-          removeFromCache(); // Cleanup if wrongly marked
-          const file = dir.createFile(fileName);
-          const stream = file.openStream('w'); // Open write stream
-          stream.write(blob);
-          stream.close();
-          saveToCache(); // Mark as downloaded
-          console.log(`✅ Downloaded to Tizen: ${fileName}`);
-          onSuccess(file.fullPath);
+          removeFromCache();
+          try {
+            const file = dir.createFile(fileName);
+            const stream = file.openStream('w');
+            stream.write(blob);
+            stream.close();
+            saveToCache();
+            console.log(` Downloaded to Tizen: ${fileName}`);
+            onSuccess(file.toURI());
+          } catch (err) {
+            console.error('Stream/File error (Tizen):', err);
+          }
         }
-      }, (err) => console.error('❌ Tizen directory error:', err));
+      };
 
-    // ==== For Web Browsers ====
+      tizen.filesystem.resolve(
+        `downloads/${FOLDER_NAME}`,
+        saveToTizen,
+        () => {
+          console.warn(' Folder not found on Tizen, creating...');
+          tizen.filesystem.resolve('downloads', (root) => {
+            try {
+              root.createDirectory(FOLDER_NAME);
+              tizen.filesystem.resolve(`downloads/${FOLDER_NAME}`, saveToTizen);
+            } catch (err) {
+              console.error(' Failed to create folder (Tizen):', err);
+            }
+          }, (err) => console.error(' Root resolve error (Tizen):', err));
+        },
+        'rw'
+      );
+
+    // ==== For Browser ====
     } else {
-      // Optional: You can use File System Access API to verify file existence
-
-      // Check if file was marked downloaded already
       if (downloaded.includes(fileName)) {
-        console.log(`🟡 Already marked downloaded in browser: ${fileName}`);
-        // You can choose to re-download if needed
+        console.log(` Already marked downloaded in browser: ${fileName}`);
         return;
       }
 
-      // Create an anchor tag to trigger download
+      const browserFileName = `${FOLDER_NAME}_${fileName}`;
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = fileName;
+      link.download = browserFileName;
       document.body.appendChild(link);
-      link.click(); // Simulate user click
+      link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(link.href); // Free memory
+      URL.revokeObjectURL(link.href);
 
-      saveToCache(); // Save to localStorage
-      console.log(`✅ Downloaded to browser: ${fileName}`);
-      onSuccess(fileName);
+      saveToCache();
+      console.log(` Downloaded to browser: ${browserFileName}`);
+      onSuccess(browserFileName);
     }
 
   } catch (err) {
-    // Handle network or writing errors
-    console.error('⛔ Download error:', err);
-    removeFromCache(); // Clean stale cache entry
+    console.error(' Download error:', err);
+    removeFromCache();
   }
 };
