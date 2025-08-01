@@ -24,7 +24,7 @@ const fetchAndDownloadMedia = async () => {
 		const playlist = response.data;
 		const currentUpdatedTime = playlist.updated_time;
 
-		console.log('=== Media API Response ===');
+		console.log('=== Media Content API Response ===');
 		console.log(JSON.stringify(playlist, null, 2));
 
 		if (updatedTime && updatedTime === currentUpdatedTime) {

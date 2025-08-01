@@ -12,7 +12,6 @@ import StreamingPage from './components/StreamingPage';
 import checkDeviceOnline from './API-Handling/useOnlineStatusCheck';
 
 import useMediaStore from './store/useMediaStore';
-import { downloadFile } from './utils/fileDownloader';
 
 export const Home = () => {
 	useDeviceDetails(); // starts polling device info
@@ -38,7 +37,7 @@ const App = () => {
 
 		checkOnlineStatus();
 
-		const interval = setInterval(checkOnlineStatus, 10000); // every 10 sec
+		const interval = setInterval(checkOnlineStatus, 1000); // every 1 sec
 		return () => clearInterval(interval);
 	}, []);
 
