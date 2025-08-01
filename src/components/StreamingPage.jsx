@@ -28,8 +28,8 @@ const StreamingPage = () => {
 
 		const fetchAndUpdateMedia = async () => {
 			if (isOnline) {
-				await fetchAndDownloadMedia(); // 👈 Triggers updated_time check + download
-				await downloadOnce();          // 👈 Still needed to cache local paths
+				await fetchAndDownloadMedia(); // Triggers updated_time check + download
+				await downloadOnce();          // Still needed to cache local paths
 
 				const list = [];
 

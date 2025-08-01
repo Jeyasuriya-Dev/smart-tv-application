@@ -12,12 +12,12 @@ const fetchAndDownloadMedia = async () => {
 	try {
 		const response = await axios.get('https://ds.iqtv.in:8080/iqworld/api/v1/playlist/mediafilebyclientforsplit', {
 			params: {
-				clientname: 'ARIHANTDUGGAD', //  ARIHANTDUGGAD
-				state_id: 7, // 7
-				city_id: 2482,  // 2482
-				androidid: 'a7b235567dbd7528', // a7b235567dbd7528
-				deviceid: 'IQW0004251', // IQW0004251
-				vertical: false  // false
+				clientname: 'ridsysc', //  ARIHANTDUGGAD
+				state_id: 2, // 7
+				city_id: 65,  // 2482
+				androidid: '0461dbdd0ce43fd2', // a7b235567dbd7528
+				deviceid: 'IQW0000014', // IQW0004251
+				vertical: true  // false
 			}
 		});
 

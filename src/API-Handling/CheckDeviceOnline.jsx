@@ -48,14 +48,14 @@ const DeviceStatusPoller = () => {
 			>
 				{
 					isOnline ?
-						<img src="Tower/sucTower-removebg-preview.png" alt="tower.."
+						<img src="/Tower/sucTower-removebg-preview.png" alt="tower.."
 							style={{
 								width: '30px',
 								height: '30px',
 								borderRadius : '5px'
 							}} />
 						:
-						<img src="Tower/failTower-removebg-preview.png" alt="tower.."
+						<img src="/Tower/failTower-removebg-preview.png" alt="tower.."
 							style={{
 								width: '30px',
 								height: '30px',
