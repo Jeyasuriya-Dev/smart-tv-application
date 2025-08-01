@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useMediaStore from '../store/useMediaStore';
 import useDownloadOnce from '../hooks/useDownloadOnce';
 import { useDeviceStatus } from '../context/DeviceStatusPollerContext';
+import fetchAndDownloadMedia from '../API-Handling/usePlaylistFetch';
 
 const FOLDER_NAME = 'IQMediaFiles';
 
@@ -23,9 +24,13 @@ const StreamingPage = () => {
 	const [index, setIndex] = useState(0);
 
 	useEffect(() => {
-		const loadMedia = async () => {
+		let intervalId; //  NEW: to store the interval ID for clearing later
+
+		const fetchAndUpdateMedia = async () => {
 			if (isOnline) {
-				await downloadOnce(); // one-time download
+				await fetchAndDownloadMedia(); // 👈 Triggers updated_time check + download
+				await downloadOnce();          // 👈 Still needed to cache local paths
+
 				const list = [];
 
 				mediaFiles?.layout_list?.forEach((layout) => {
@@ -53,8 +58,15 @@ const StreamingPage = () => {
 			}
 		};
 
-		loadMedia();
-	}, [isOnline]);
+		// Call immediately on entry
+		fetchAndUpdateMedia(); //  NEW
+
+		// Set interval every second
+		intervalId = setInterval(fetchAndUpdateMedia, 1000); //  NEW: Call every 1s
+
+		// Cleanup on unmount
+		return () => clearInterval(intervalId); //  NEW
+	}, [isOnline, mediaFiles]); //  NEW: mediaFiles dependency to re-check layout
 
 	useEffect(() => {
 		if (mediaList.length === 0) return;

@@ -103,7 +103,7 @@ const SplashScreen = ({ onComplete }) => {
 	// Api polling starts After video ends
 	useServerPoll(videoEndState && serverStatus !== 'error', handleServerResponse, appurl);
 	SignInAPI(); // Sign IN api function call 
-	MediaFetcher(); //call the media fetch api
+	// MediaFetcher(); //call the media fetch api
 
 	// Video Load Located for the Device Orientation
 	useEffect(() => {

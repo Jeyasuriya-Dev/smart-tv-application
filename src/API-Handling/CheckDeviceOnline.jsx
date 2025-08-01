@@ -22,32 +22,49 @@ const DeviceStatusPoller = () => {
 
 	useEffect(() => {
 		checkAPI(); // Initial check
-		const interval = setInterval(checkAPI, 1000); // Check every Sec
+		const interval = setInterval(checkAPI, 1000); // Check every second
 		return () => clearInterval(interval);
 	}, [isOnlineURL]);
 
 	return (
 		<>
-			{/* Status icon in top-left corner */}
+			{/* icon in bottom-right with green or red color */}
 			<div
 				style={{
 					position: 'fixed',
-					top: 5,
-					left: 5,
-					backgroundColor: isOnline ? 'rgba(0,255,0,0.2)' : 'rgba(255,0,0,0.2)',
-					color: isOnline ? '#0f0' : '#f00',
-					padding: '6px 12px',
-					borderRadius: '6px',
-					fontWeight: 600,
-					fontSize: '14px',
+					bottom: 5,
+					right: 5,
+					// background: isOnline ? '#000FF00' : '#FF0000', // Green if online, Red if offline
+					fontSize: '30px',
 					zIndex: 9999,
-					fontFamily: 'monospace',
+					width: '30px',
+					height: '30px',
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+
+
 				}}
 			>
-				{isOnline ? '🟢 Online' : '🔴 Offline'}
+				{
+					isOnline ?
+						<img src="Tower/sucTower-removebg-preview.png" alt="tower.."
+							style={{
+								width: '30px',
+								height: '30px',
+								borderRadius : '5px'
+							}} />
+						:
+						<img src="Tower/failTower-removebg-preview.png" alt="tower.."
+							style={{
+								width: '30px',
+								height: '30px',
+								borderRadius : '5px'
+							}} />
+				}
 			</div>
 
-			{/* Full-screen offline UI */}
+			{/* Optional full-screen offline UI */}
 			{!isOnline && (
 				<div
 					style={{

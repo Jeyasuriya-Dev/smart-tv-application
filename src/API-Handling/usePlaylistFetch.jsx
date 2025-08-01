@@ -1,41 +1,48 @@
-// src/utils/fetchAndDownloadMedia.js
 import useMediaStore from '../store/useMediaStore';
 import axios from 'axios';
 import { downloadFile } from '../utils/fileDownloader';
 
-let hasFetchedMedia = false;
-
 const fetchAndDownloadMedia = async () => {
-	if (hasFetchedMedia) return;
-	hasFetchedMedia = true;
-
-	const setMediaFiles = useMediaStore.getState().setMediaFiles;
+	const {
+		setMediaFiles,
+		setUpdatedTime,
+		updatedTime
+	} = useMediaStore.getState();
 
 	try {
 		const response = await axios.get('https://ds.iqtv.in:8080/iqworld/api/v1/playlist/mediafilebyclientforsplit', {
 			params: {
-				clientname: 'ridsysc', //ARIHANTDUGGAD ridsysc
-				state_id: 2, // 7 2
-				city_id: 65, // 2482 65
-				androidid: '0461dbdd0ce43fd2', // a7b235567dbd7528 0461dbdd0ce43fd2
-				deviceid: 'IQW0000014', // IQW0004251  IQW0000014
-				vertical: true //false true
+				clientname: 'ARIHANTDUGGAD', //  ARIHANTDUGGAD
+				state_id: 7, // 7
+				city_id: 2482,  // 2482
+				androidid: 'a7b235567dbd7528', // a7b235567dbd7528
+				deviceid: 'IQW0004251', // IQW0004251
+				vertical: false  // false
 			}
 		});
 
 		const playlist = response.data;
-		setMediaFiles(playlist);
-		console.log('=== Media API Response ===');
-				console.log(JSON.stringify(playlist, null, 2));
+		const currentUpdatedTime = playlist.updated_time;
 
-		//  Loop media and download only once
+		console.log('=== Media API Response ===');
+		console.log(JSON.stringify(playlist, null, 2));
+
+		if (updatedTime && updatedTime === currentUpdatedTime) {
+			console.log('🔄 No update detected. Skipping download.');
+			return false;
+		}
+
+		console.log('✅ Update detected. Downloading new media.');
+		setUpdatedTime(currentUpdatedTime);
+		setMediaFiles(playlist);
+
 		for (const layout of playlist.layout_list) {
 			for (const zone of layout.zonelist) {
 				for (const media of zone.media_list) {
 					const url = media.Url || media.url;
 					const fileName = url?.split('/').pop();
 					if (url && fileName) {
-						await downloadFile(url, fileName); // Now avoids duplicate
+						await downloadFile(url, fileName);
 					}
 				}
 			}
@@ -43,7 +50,7 @@ const fetchAndDownloadMedia = async () => {
 
 		return true;
 	} catch (err) {
-		console.error(' Error fetching media:', err);
+		console.error('❌ Error fetching media:', err);
 		return false;
 	}
 };
