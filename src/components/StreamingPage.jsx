@@ -3,12 +3,16 @@ import useMediaStore from '../store/useMediaStore';
 import useDownloadOnce from '../hooks/useDownloadOnce';
 import { useDeviceStatus } from '../context/DeviceStatusPollerContext';
 import fetchAndDownloadMedia from '../API-Handling/usePlaylistFetch';
+import ReactPlayer from 'react-player';
+import Spinner from 'react-bootstrap/Spinner';
 
 const FOLDER_NAME = 'IQMediaFiles';
 
 const isVideo = (f) => /\.(mp4|webm|ogg)$/i.test(f);
 const isImage = (f) => /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(f);
 
+
+//when the user Offline Get the Local URl
 const getLocalPath = (filename) => {
 	if (window.webOS) return `file:///media/developer/${FOLDER_NAME}/${filename}`;
 	if (window.tizen) return `/opt/usr/home/owner/Downloads/${FOLDER_NAME}/${filename}`;
@@ -38,8 +42,8 @@ const StreamingPage = () => {
 						zone.media_list.forEach((media) => {
 							const url = media.Url || media.url;
 							const filename = url?.split('/').pop();
-							const extension = filename?.split('.').pop().toLowerCase();
-							const type = isVideo(extension) ? 'video' : 'image';
+							const ext = filename?.split('.').pop().toLowerCase();
+							const type = isVideo(ext) ? 'video' : 'image';
 							list.push({ url, type });
 						});
 					});
@@ -50,8 +54,8 @@ const StreamingPage = () => {
 				const cached = JSON.parse(localStorage.getItem('downloadedMediaFiles_IQMediaFiles') || '[]');
 				const offlineList = cached.map((filename) => {
 					const path = getLocalPath(filename);
-					const extension = filename?.split('.').pop().toLowerCase();
-					const type = isVideo(extension) ? 'video' : 'image';
+					const ext = filename?.split('.').pop().toLowerCase();
+					const type = isVideo(ext) ? 'video' : 'image';
 					return { url: path, type };
 				});
 				setMediaList(offlineList);
@@ -83,34 +87,76 @@ const StreamingPage = () => {
 
 	const onVideoEnd = () => setIndex((i) => (i + 1) % mediaList.length);
 	const current = mediaList[index];
-	if (!current) return <p>Loading media...</p>;
+
+
+	// Before Video Load Show Loading Spinner
+	if (!current) {
+		return (
+			<div style={{
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				width: '100vw',
+				height: '100vh',
+				backgroundColor: '#000',
+				color: '#fff'
+			}}>
+				<Spinner animation="border" variant="success" />
+			</div>
+		);
+	}
+
 
 	return (
-		<div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
-			{current.type === 'video' ? (
-				<video
-					src={current.url}
-					autoPlay
-					controls={false}
-					onEnded={onVideoEnd}
-					style={{
-						width: '100%',
-						height: '100%',
-						objectFit: 'cover',
-					}}
-				/>
-			) : (
-				<img
-					src={current.url}
-					alt="media"
-					style={{
-						width: '100%',
-						height: '100%',
-						objectFit: 'cover',
-					}}
-				/>
-			)}
-		</div>
+		// <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+		// 	{current.type === 'image' ? (
+		// 		<img
+		// 			src={current.url}
+		// 			alt="media"
+		// 			style={{
+		// 				width: '100%',
+		// 				height: '100%',
+		// 				objectFit: 'cover',
+		// 			}}
+		// 		/>
+
+
+		// 	) : (
+
+		// 		//using REACT PLAYER for load videos
+		// 		<ReactPlayer
+		// 			url={current.url}
+		// 			playing
+		// 			controls={false}
+		// 			loop
+		// 			onEnded={onVideoEnd}
+		// 			style={{
+		// 				objectFit: 'cover',
+		// 				width: "100%",
+		// 				height: "100%"
+		// 			}}
+		// 		/>
+		// 	)}
+		// </div>
+
+		// Fun Loader
+		<ReactPlayer
+			src='https://youtu.be/X2G8YEYKI38?si=1TtZLCjR2uHI5dj_' // videos/ilamai_thirumbuthe.mp4
+			autoPlay
+			controls={false}
+			loop
+			muted
+			onEnded={onVideoEnd}
+			style={{
+				objectFit: 'cover',
+				width: "100vw",
+				height: "100vh"
+			}}
+		/>
+
+
+
+
 	);
 };
 

@@ -52,13 +52,9 @@ const App = () => {
 			<RemoteControlHandler />
 			<Router>
 				<AndroidIDFetcher />
-				{isDeviceOnline === null ? (
-					<p style={{ color: 'white', background: 'black', padding: 20 }}>Checking device status...</p>
-				) : !isDeviceOnline ? (
-					<div style={{ color: 'white', background: 'black', padding: 20 }}>
-						<h1>Device is offline</h1>
-					</div>
-				) : showSplash ? (
+				
+				{/* SplashScreen shows immediately, regardless of online status */}
+				{showSplash ? (
 					<SplashScreen onComplete={() => setShowSplash(false)} />
 				) : (
 					<Routes>

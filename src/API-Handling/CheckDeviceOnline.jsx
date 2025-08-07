@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const DeviceStatusPoller = () => {
 	const [isOnline, setIsOnline] = useState(true);
+	const [imagesrc, setImagesrc] = useState('');
 	const isOnlineURL = import.meta.env.VITE_DEVICEONLINE_CHECK_URL;
 
 	const checkAPI = async () => {
@@ -25,6 +26,29 @@ const DeviceStatusPoller = () => {
 		const interval = setInterval(checkAPI, 1000); // Check every second
 		return () => clearInterval(interval);
 	}, [isOnlineURL]);
+
+	//No Internet image Load Located for the Device Orientation and image shows even if the user rotates the device later.
+	useEffect(() => {
+		const updateImageBasedOnOrientation = () => {
+			const { innerWidth, innerHeight } = window;
+			if (innerWidth > innerHeight) {
+				setImagesrc('assets/nointernet-landscape.jpeg');
+			} else {
+				setImagesrc('assets/noInternet-portrait.jpeg');
+			}
+		};
+
+		updateImageBasedOnOrientation();
+
+		window.addEventListener('resize', updateImageBasedOnOrientation);
+		window.addEventListener('orientationchange', updateImageBasedOnOrientation);
+
+		return () => {
+			window.removeEventListener('resize', updateImageBasedOnOrientation);
+			window.removeEventListener('orientationchange', updateImageBasedOnOrientation);
+		};
+	}, []);
+
 
 	return (
 		<>
@@ -52,14 +76,14 @@ const DeviceStatusPoller = () => {
 							style={{
 								width: '30px',
 								height: '30px',
-								borderRadius : '5px'
+								borderRadius: '5px'
 							}} />
 						:
 						<img src="/Tower/failTower-removebg-preview.png" alt="tower.."
 							style={{
 								width: '30px',
 								height: '30px',
-								borderRadius : '5px'
+								borderRadius: '5px'
 							}} />
 				}
 			</div>
@@ -73,21 +97,21 @@ const DeviceStatusPoller = () => {
 						left: 0,
 						width: '100vw',
 						height: '100vh',
-						backgroundColor: '#f8f8f8',
-						color: '#333',
-						display: 'flex',
-						flexDirection: 'column',
 						alignItems: 'center',
 						justifyContent: 'center',
-						fontFamily: 'Arial, sans-serif',
 						zIndex: 9998,
 					}}
 				>
-					<div style={{ fontSize: 80, marginBottom: 20 }}>📡</div>
-					<h2>No Internet Connection</h2>
-					<p style={{ maxWidth: 300, textAlign: 'center' }}>
-						Check your connection and try again. This app requires internet access.
-					</p>
+
+					{/* Here Load The No internet Image Based On Orientation */}
+					<img
+						src={imagesrc}
+						alt="No Internet..."
+						style={{
+							width: '100%',
+							height: '100%',
+						}}
+					/>
 				</div>
 			)}
 		</>
