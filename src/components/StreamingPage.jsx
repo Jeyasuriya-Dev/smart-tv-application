@@ -8,8 +8,9 @@ import Spinner from 'react-bootstrap/Spinner';
 
 const FOLDER_NAME = 'IQMediaFiles';
 
-const isVideo = (f) => /\.(mp4|webm|ogg)$/i.test(f);
-const isImage = (f) => /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(f);
+const isVideo = (f) => /\.(mp4|webm|ogg)$/i.test(f) || /^(mp4|webm|ogg)$/i.test(f);
+const isImage = (f) => /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(f) || /^(jpg|jpeg|png|gif|bmp|webp)$/i.test(f);
+
 
 
 //when the user Offline Get the Local URl
@@ -22,10 +23,9 @@ const getLocalPath = (filename) => {
 const StreamingPage = () => {
 	const isOnline = useDeviceStatus();
 	const downloadOnce = useDownloadOnce();
-	const mediaFiles = useMediaStore((state) => state.mediaFiles);
-
 	const [mediaList, setMediaList] = useState([]);
 	const [index, setIndex] = useState(0);
+	const mediaFiles = useMediaStore((state) => state.mediaFiles);
 
 	useEffect(() => {
 		let intervalId; //  NEW: to store the interval ID for clearing later
@@ -35,7 +35,7 @@ const StreamingPage = () => {
 				await fetchAndDownloadMedia(); // Triggers updated_time check + download
 				await downloadOnce();          // Still needed to cache local paths
 
-				const list = [];
+				const onlinelist = [];
 
 				mediaFiles?.layout_list?.forEach((layout) => {
 					layout.zonelist.forEach((zone) => {
@@ -44,12 +44,13 @@ const StreamingPage = () => {
 							const filename = url?.split('/').pop();
 							const ext = filename?.split('.').pop().toLowerCase();
 							const type = isVideo(ext) ? 'video' : 'image';
-							list.push({ url, type });
+							onlinelist.push({ url, type });
 						});
 					});
 				});
+				console.log(onlinelist);
 
-				setMediaList(list);
+				setMediaList(onlinelist);
 			} else {
 				const cached = JSON.parse(localStorage.getItem('downloadedMediaFiles_IQMediaFiles') || '[]');
 				const offlineList = cached.map((filename) => {
@@ -108,51 +109,53 @@ const StreamingPage = () => {
 
 
 	return (
-		// <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
-		// 	{current.type === 'image' ? (
-		// 		<img
-		// 			src={current.url}
-		// 			alt="media"
-		// 			style={{
-		// 				width: '100%',
-		// 				height: '100%',
-		// 				objectFit: 'cover',
-		// 			}}
-		// 		/>
+		<div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+			{current.type === 'video' ? (
+
+				//using REACT PLAYER for load videos
+				<ReactPlayer
+					url={current.url}
+					playing
+					controls={false}
+					loop = {false}
+					onEnded={onVideoEnd}
+					style={{
+						objectFit: 'cover',
+						width: "100%",
+						height: "100%"
+					}}
+				/>
 
 
-		// 	) : (
+			) : (
 
-		// 		//using REACT PLAYER for load videos
-		// 		<ReactPlayer
-		// 			url={current.url}
-		// 			playing
-		// 			controls={false}
-		// 			loop
-		// 			onEnded={onVideoEnd}
-		// 			style={{
-		// 				objectFit: 'cover',
-		// 				width: "100%",
-		// 				height: "100%"
-		// 			}}
-		// 		/>
-		// 	)}
-		// </div>
+
+				<img
+					src={current.url}
+					alt="media"
+					style={{
+						width: '100%',
+						height: '100%',
+						objectFit: 'cover',
+					}}
+				/>
+			)}
+		</div>
 
 		// Fun Loader
-		<ReactPlayer
-			src='https://youtu.be/X2G8YEYKI38?si=1TtZLCjR2uHI5dj_' // videos/ilamai_thirumbuthe.mp4
-			autoPlay
-			controls={false}
-			loop
-			muted
-			onEnded={onVideoEnd}
-			style={{
-				objectFit: 'cover',
-				width: "100vw",
-				height: "100vh"
-			}}
-		/>
+		// <ReactPlayer
+		// 	src='videos/ilamai_thirumbuthe.mp4' // videos/ilamai_thirumbuthe.mp4
+		// 	autoPlay
+		// 	controls={false}
+		// 	loop
+		// 	muted
+		// 	onEnded={onVideoEnd}
+		// 	style={{
+		// 		objectFit: 'cover',
+		// 		width: "100vw",
+		// 		height: "100vh"
+		// 	}}
+		// />
 
 
 

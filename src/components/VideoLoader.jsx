@@ -4,7 +4,6 @@ import userDeviceDetails from '../API-Handling/userDeviceDetails';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import SignInAPI from '../API-Handling/SignInAPI';
-import MediaFetcher from '../API-Handling/usePlaylistFetch';
 import useAppUrlStore from '../store/useAppUrlStore';
 import RegistrationPage from './RegistrationPage';
 import userDeviceStore from '../store/userDeviceStore';
