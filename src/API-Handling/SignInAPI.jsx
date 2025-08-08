@@ -7,7 +7,7 @@ const SignInAPI = () => {
   
 
   const BASE_URL = 'https://ds.iqtv.in:8080/iqworld';
-  const TEST_URL = 'http://192.168.0.43:8585';
+  const TEST_URL = 'https://ds.iqtv.in:8080';
 
   useEffect(() => {
     const login = async () => {
@@ -20,7 +20,7 @@ const SignInAPI = () => {
           },
           body: JSON.stringify({
             username: 'admin',   // Replace with actual username for testing : admin  
-            password: 'admin@123'    // Replace with actual password : admin@123
+            password: 'Rhea@2511'    // Replace with actual password : admin@123
           }),
         });
 

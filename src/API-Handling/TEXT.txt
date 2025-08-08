@@ -1,0 +1,43 @@
+
+BASE_URL = 'http://192.168.70.100:8585/iqworld';
+{
+
+    "ABCDEFGHIJ"
+  "isautoupgrade": false,
+  "modelname": "CANNx3201",
+  "pwron": "",
+  "client_id": 6,
+  "district_name": "Kurnool",
+  "password": "IQW0000061",
+  "city_name": "Atmakur",
+  "apkVersion": "null",
+  "isexpired": false,
+  "state_name": "ANDHRA PRADESH",
+  "isscreenshot": false,
+  "clientname": "dfgdg dfgdfg",
+  "state_id": 2,
+  "apk": "null",
+  "device_status": true,
+  "pincode": "null",
+  "orientation": "9:16",
+  "pwroff": "",
+  "version": "PRO",
+  "device_info": false,
+  "client_status": true,
+  "locationid": 10,
+  "location": "ATMAKUR",
+  "district_id": 9,
+  "clientusername": "dfgdf",
+  "status": "success",
+  "username": "IQW0000061",
+  "city_id": 300
+}
+
+params: {
+				clientname: 'dfgdf', //  ARIHANTDUGGAD  ridsysc  rajbabu  dfgdf
+				state_id: 2, // 7 2  27  2
+				city_id: 300,  // 2482  65  1490  300
+				androidid: 'ABCDEFGHIJ', // a7b235567dbd7528  0461dbdd0ce43fd2   0461dbdd0ce43fd2  ABCDEFGHIJ
+				deviceid: 'IQW0000061', // IQW0004251  IQW0000014  IQW0000021  IQW0000061
+				vertical: true  // false  true  true  true
+			}

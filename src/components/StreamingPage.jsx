@@ -23,144 +23,73 @@ const getLocalPath = (filename) => {
 const StreamingPage = () => {
 	const isOnline = useDeviceStatus();
 	const downloadOnce = useDownloadOnce();
-	const [mediaList, setMediaList] = useState([]);
 	const [index, setIndex] = useState(0);
-	const mediaFiles = useMediaStore((state) => state.mediaFiles);
+	const mediaUrls = useMediaStore((state) => state.mediaUrls);
 
 	useEffect(() => {
-		let intervalId; //  NEW: to store the interval ID for clearing later
-
 		const fetchAndUpdateMedia = async () => {
 			if (isOnline) {
-				await fetchAndDownloadMedia(); // Triggers updated_time check + download
-				await downloadOnce();          // Still needed to cache local paths
-
-				const onlinelist = [];
-
-				mediaFiles?.layout_list?.forEach((layout) => {
-					layout.zonelist.forEach((zone) => {
-						zone.media_list.forEach((media) => {
-							const url = media.Url || media.url;
-							const filename = url?.split('/').pop();
-							const ext = filename?.split('.').pop().toLowerCase();
-							const type = isVideo(ext) ? 'video' : 'image';
-							onlinelist.push({ url, type });
-						});
-					});
-				});
-				console.log(onlinelist);
-
-				setMediaList(onlinelist);
+				await fetchAndDownloadMedia();
+				await downloadOnce();
 			} else {
 				const cached = JSON.parse(localStorage.getItem('downloadedMediaFiles_IQMediaFiles') || '[]');
-				const offlineList = cached.map((filename) => {
-					const path = getLocalPath(filename);
-					const ext = filename?.split('.').pop().toLowerCase();
-					const type = isVideo(ext) ? 'video' : 'image';
-					return { url: path, type };
-				});
-				setMediaList(offlineList);
+				const offlineList = cached.map((filename) => getLocalPath(filename));
+				useMediaStore.getState().setMediaUrls(offlineList);
 			}
 		};
 
-		// Call immediately on entry
-		fetchAndUpdateMedia(); //  NEW
-
-		// Set interval every second
-		intervalId = setInterval(fetchAndUpdateMedia, 1000); //  NEW: Call every 1s
-
-		// Cleanup on unmount
-		return () => clearInterval(intervalId); //  NEW
-	}, [isOnline, mediaFiles]); //  NEW: mediaFiles dependency to re-check layout
+		fetchAndUpdateMedia();
+		const interval = setInterval(fetchAndUpdateMedia, 3000); // fetch every sec
+		return () => clearInterval(interval);
+	}, [isOnline]);
 
 	useEffect(() => {
-		if (mediaList.length === 0) return;
+	if (!mediaUrls.length) return;
 
-		let timer;
-		const current = mediaList[index];
+	const currentUrl = mediaUrls[index];
 
-		if (current.type === 'image') {
-			timer = setTimeout(() => setIndex((i) => (i + 1) % mediaList.length), 5000);
-		}
+	// Only run timer for images
+	if (!isVideo(currentUrl)) {
+		const timer = setTimeout(() => {
+			setIndex((i) => (i + 1) % mediaUrls.length);
+		}, 5000);
 
 		return () => clearTimeout(timer);
-	}, [index, mediaList]);
-
-	const onVideoEnd = () => setIndex((i) => (i + 1) % mediaList.length);
-	const current = mediaList[index];
-
-
-	// Before Video Load Show Loading Spinner
-	if (!current) {
-		return (
-			<div style={{
-				display: 'flex',
-				justifyContent: 'center',
-				alignItems: 'center',
-				width: '100vw',
-				height: '100vh',
-				backgroundColor: '#000',
-				color: '#fff'
-			}}>
-				<Spinner animation="border" variant="success" />
-			</div>
-		);
 	}
 
+	// For videos, do nothing here — rely entirely on onEnded
+}, [index, mediaUrls]);
+
+const handleVideoEnd = () => {
+	setIndex((i) => (i + 1) % mediaUrls.length);
+};
+	
+
+	const currentUrl = mediaUrls[index];
+	// const handleVideoEnd = () => setIndex((i) => (i + 1) % mediaUrls.length);
 
 	return (
-		<div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
-			{current.type === 'video' ? (
-
-				//using REACT PLAYER for load videos
-				<ReactPlayer
-					url={current.url}
-					playing
+		<div style={{ width: '100vw', height: '100vh', overflow: 'hidden', background: '#000' }}>
+			{isVideo(currentUrl) ? (
+				<video
+					src={currentUrl}
+					autoPlay
+					//   loop
 					controls={false}
-					loop = {false}
-					onEnded={onVideoEnd}
-					style={{
-						objectFit: 'cover',
-						width: "100%",
-						height: "100%"
-					}}
+					muted
+					onEnded={handleVideoEnd}
+					style={{ width: '100%', height: '100%', objectFit: 'cover' }}
 				/>
-
-
 			) : (
-
-
 				<img
-					src={current.url}
+					src={currentUrl}
 					alt="media"
-					style={{
-						width: '100%',
-						height: '100%',
-						objectFit: 'cover',
-					}}
+					style={{ width: '100%', height: '100%', objectFit: 'cover' }}
 				/>
 			)}
 		</div>
-
-		// Fun Loader
-		// <ReactPlayer
-		// 	src='videos/ilamai_thirumbuthe.mp4' // videos/ilamai_thirumbuthe.mp4
-		// 	autoPlay
-		// 	controls={false}
-		// 	loop
-		// 	muted
-		// 	onEnded={onVideoEnd}
-		// 	style={{
-		// 		objectFit: 'cover',
-		// 		width: "100vw",
-		// 		height: "100vh"
-		// 	}}
-		// />
-
-
-
-
 	);
 };
+
 
 export default StreamingPage;

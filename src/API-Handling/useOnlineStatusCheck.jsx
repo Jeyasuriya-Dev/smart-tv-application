@@ -3,14 +3,14 @@
 
 import axios from 'axios';
 
-const CHECK_URL = 'https://ds.iqtv.in:8080/iqworld/api/v1/device/checkonline';
+const CHECK_URL = 'http://192.168.70.100:8585/iqworld/api/v1/device/checkonline';
 
 const checkDeviceOnline = async () => {
 	try {
 		const res = await axios.get(CHECK_URL, {
 			params: {
-				adrid: '0461dbdd0ce43fd2',
-				clientname: 'ridsysc'
+				adrid: 'ABCDEFGHIJ',
+				clientname: 'dfgdf'
 			}
 		});
 

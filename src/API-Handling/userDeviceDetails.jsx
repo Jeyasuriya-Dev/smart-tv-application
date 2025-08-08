@@ -7,8 +7,8 @@ import userDeviceStore from '../store/userDeviceStore';
 const useDeviceDetails = (shouldStart) => {
 	const [deviceDetails, setDeviceDetails] = useState(null);
 	const navigate = useNavigate();
-	const Device_id = '0461dbdd0ce43fd2'; // 0461dbdd0ce43fd2  a7b235567dbd7528  0461dbdd0ce43fd2
-	const BASE_URL = 'https://ds.iqtv.in:8080/iqworld';
+	const Device_id = 'ABCDEFGHIJ'; // 0461dbdd0ce43fd2  a7b235567dbd7528  
+	const BASE_URL = 'http://192.168.70.100:8585/iqworld';
 	// const APPLICATION_URL = import.meta.env.VITE_SERVER_APPLICATION_URL;
 
 
@@ -25,11 +25,6 @@ const useDeviceDetails = (shouldStart) => {
 	}, [showdeviceDetails]);
 
 
-	const deviceExistCheck = () => {
-
-	}
-
-
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -40,8 +35,6 @@ const useDeviceDetails = (shouldStart) => {
 
 				console.log('=== Device API Response ===');
 				console.log(JSON.stringify(data, null, 2));
-
-				const deviceCheck = deviceExistCheck(data);
 
 				setDeviceDetails(data);
 
