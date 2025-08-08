@@ -44,26 +44,26 @@ const StreamingPage = () => {
 	}, [isOnline]);
 
 	useEffect(() => {
-	if (!mediaUrls.length) return;
+		if (!mediaUrls.length) return;
 
-	const currentUrl = mediaUrls[index];
+		const currentUrl = mediaUrls[index];
 
-	// Only run timer for images
-	if (!isVideo(currentUrl)) {
-		const timer = setTimeout(() => {
-			setIndex((i) => (i + 1) % mediaUrls.length);
-		}, 5000);
+		// Only run timer for images
+		if (!isVideo(currentUrl)) {
+			const timer = setTimeout(() => {
+				setIndex((i) => (i + 1) % mediaUrls.length);
+			}, 5000);
 
-		return () => clearTimeout(timer);
-	}
+			return () => clearTimeout(timer);
+		}
 
-	// For videos, do nothing here — rely entirely on onEnded
-}, [index, mediaUrls]);
+		// For videos, do nothing here — rely entirely on onEnded
+	}, [index, mediaUrls]);
 
-const handleVideoEnd = () => {
-	setIndex((i) => (i + 1) % mediaUrls.length);
-};
-	
+	const handleVideoEnd = () => {
+		setIndex((i) => (i + 1) % mediaUrls.length);
+	};
+
 
 	const currentUrl = mediaUrls[index];
 	// const handleVideoEnd = () => setIndex((i) => (i + 1) % mediaUrls.length);

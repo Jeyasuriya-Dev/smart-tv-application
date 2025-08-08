@@ -10,8 +10,8 @@ const DeviceStatusPoller = () => {
 		try {
 			const response = await axios.get(isOnlineURL, {
 				params: {
-					adrid: 'a7b235567dbd7528',
-					clientname: 'ridsysc',
+					adrid: 'ABCDEFGHIJ',
+					clientname: 'dfgdf',
 				},
 				timeout: 3000,
 			});
