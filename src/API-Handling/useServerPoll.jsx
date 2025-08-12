@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const useServerPoll = (shouldPoll,onServerResponse,url) => {
   // const LIVE_URL = import.meta.env.VITE_SERVER_LIVE_URL;// https://ds.iqtv.in:8080/iqserver
-  const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL; // http://192.168.70.100:8585/iqserver
+  const BASE_URL = import.meta.env.VITE_SERVER_BASE_URL; // http://192.168.70.100:8585/iqserver-testingURL
 
     // calling api while video end  for every Second
   useEffect(() => {

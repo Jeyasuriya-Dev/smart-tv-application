@@ -10,9 +10,9 @@ import { useNavigate } from 'react-router-dom';
 export default function RegistrationPage() {
 	const [uniqueNumber, setUniqueNumber] = useState('');
 	const [qrValue, setQrvalue] = useState(true);
-	const deviceid = 'de568fcc560faa62'
+	const androidid = '0461dbdd0ce43fd2'  ///0461dbdd0ce43fd2  de568fcc560faa62
 	//   This value for to show the new Registration page
-	const [value, setValue] = useState(`http://192.168.70.100:8585/#/iqworld/digitalsignage/device/registrationform/${deviceid}`)
+	const [value, setValue] = useState(`https://ds.iqtv.in/#/iqworld/digitalsignage/device/registrationform/${androidid}`)
 	const [deviceId, setDeviceId] = useState('');
 
 	const { setAndroidId } = userAndroidIDStore();

@@ -324,7 +324,7 @@ const StreamingPage = () => {
 					key={currentUrl}
 					src={currentUrl}
 					autoPlay
-					muted
+					// muted
 					controls={false}
 					onCanPlay={handleFirstMediaReady}
 					onEnded={handleVideoEnd}
